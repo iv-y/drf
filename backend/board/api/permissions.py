@@ -12,3 +12,11 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
 
         return obj.author == request.user
 
+class IsUserSelf(permissions.BasePermission):
+    """
+        Custom permission to only allow the user oneself can access it.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        return obj == request.user
+

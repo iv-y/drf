@@ -3,21 +3,43 @@ from rest_framework.views import APIView
 from django.http import Http404
 from rest_framework import status, generics, permissions
 
+from rest_framework.decorators import api_view
+from rest_framework.reverse import reverse
+
 from django.db.models import Max
 
 from board.models import Post, Reply
 from board.api.serializers import PostSerializer, ReplySerializer, UserSerializer
-from board.api.permissions import IsAuthorOrReadOnly
+from board.api.permissions import IsAuthorOrReadOnly, IsUserSelf
 
 from board.api.helper import get_user_model
 
 
+@api_view(['GET'])
+def api_root(request, format = None):
+    return Response({
+        'users': reverse('user-list', request = request, format = format),
+        'posts': reverse('post-list', request = request, format = format),
+    })
+
+
 class UserList(generics.ListAPIView):
+
+    permission_classes = [
+        permissions.IsAdminUser,
+    ]
+
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
 
 
 class UserDetail(generics.RetrieveAPIView):
+
+    permission_classes = [
+        permissions.IsAuthenticated,
+        IsUserSelf,
+    ]
+
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
 
