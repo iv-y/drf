@@ -85,7 +85,6 @@ class ReplyList(APIView):
 
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly,
-        IsAuthorOrReadOnly,
     ]
 
     def get_post(self, pk):
