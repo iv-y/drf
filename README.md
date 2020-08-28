@@ -14,7 +14,7 @@ Django <-> DRF <-> Vue.js
 
 ## frontend
 
-In development
+how to run at port 80: `npm run serve80`
 
 ## References
 

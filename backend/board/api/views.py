@@ -3,6 +3,8 @@ from rest_framework.views import APIView
 from django.http import Http404
 from rest_framework import status
 
+from django.db.models import Max
+
 from board.models import Post, Reply
 from board.api.serializers import PostSerializer, ReplySerializer
 
@@ -15,7 +17,11 @@ class PostList(APIView):
         return Response(serializer.data)
 
     def post(self, request, format = None):
-        serializer = PostSerializer(data = request.data)
+        post_specific_data = {
+            "author": request.user.id,
+        }
+
+        serializer = PostSerializer(data = {**request.data, **post_specific_data})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status = status.HTTP_201_CREATED)
@@ -52,4 +58,34 @@ class PostDetail(APIView):
 
         return Response(status = status.HTTP_204_NO_CONTENT)
 
+
+class ReplyList(APIView):
+
+    def get_post(self, pk):
+        try:
+            return Post.objects.get(pk = pk)
+        except:
+            raise Http404('No such post exist.')
+
+    def get(self, request, pk, format = None):
+        post = self.get_post(pk)
+        replies = post.reply_set.order_by('reply_order').all()
+        serializer = ReplySerializer(replies, many = True)
+
+        return Response(serializer.data)
+
+    def post(self, request, pk, format = None):
+        post = self.get_post(pk)
+        reply_specific_data = {
+            "post": pk,
+            "reply_order": post.reply_set.aggregate(Max('reply_order'))['reply_order__max'] + 1,
+            "author": request.user.id,
+        }
+        serializer = ReplySerializer(data = {**request.data, **reply_specific_data})
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status = status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
 

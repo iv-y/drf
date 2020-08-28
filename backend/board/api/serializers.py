@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from board.models import Post, Reply
 
 
@@ -37,7 +38,7 @@ class ReplySerializer(serializers.ModelSerializer):
         return obj.liked_users.count()
 
     class Meta:
-        model = Post
+        model = Reply
         fields = (
             'id',
             'post',

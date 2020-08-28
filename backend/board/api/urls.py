@@ -5,7 +5,8 @@ from board.api import views
 
 urlpatterns = [
     path('posts/', views.PostList.as_view()),
-    path('posts/<int:pk>/', views.PostDetail.as_view())
+    path('posts/<int:pk>/', views.PostDetail.as_view()),
+    path('posts/<int:pk>/replies/', views.ReplyList.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
