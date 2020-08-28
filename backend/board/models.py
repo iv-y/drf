@@ -43,3 +43,8 @@ class Reply(models.Model, AbstractAuthoredThing):
     def __str__(self):
         return f'{self.post} > reply #{self.reply_order} by {self.author_str}'
 
+    class Meta:
+        unique_together = (
+            ('post', 'reply_order'),
+        )
+
