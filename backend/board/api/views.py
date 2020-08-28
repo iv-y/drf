@@ -1,15 +1,32 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.http import Http404
-from rest_framework import status
+from rest_framework import status, generics, permissions
 
 from django.db.models import Max
 
 from board.models import Post, Reply
-from board.api.serializers import PostSerializer, ReplySerializer
+from board.api.serializers import PostSerializer, ReplySerializer, UserSerializer
+from board.api.permissions import IsAuthorOrReadOnly
+
+from board.api.helper import get_user_model
+
+
+class UserList(generics.ListAPIView):
+    queryset = get_user_model().objects.all()
+    serializer_class = UserSerializer
+
+
+class UserDetail(generics.RetrieveAPIView):
+    queryset = get_user_model().objects.all()
+    serializer_class = UserSerializer
 
 
 class PostList(APIView):
+
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly,
+    ]
 
     def get(self, request, format = None):
         posts = Post.objects.all()
@@ -31,6 +48,11 @@ class PostList(APIView):
 
 class PostDetail(APIView):
     
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly,
+        IsAuthorOrReadOnly,
+    ]
+
     def get_object(self, pk):
         try:
             return Post.objects.get(pk = pk)
@@ -61,6 +83,11 @@ class PostDetail(APIView):
 
 class ReplyList(APIView):
 
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly,
+        IsAuthorOrReadOnly,
+    ]
+
     def get_post(self, pk):
         try:
             return Post.objects.get(pk = pk)
@@ -89,3 +116,4 @@ class ReplyList(APIView):
         else:
             return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
 
+# TODO Add a 'ReplyDetail' view

@@ -1,6 +1,24 @@
 from rest_framework import serializers
 
 from board.models import Post, Reply
+from board.api.helper import get_user_model
+
+
+class UserSerializer(serializers.ModelSerializer):
+
+    posts = serializers.SerializerMethodField()
+
+    def get_posts(self, obj):
+        return Post.objects.filter(author=obj).values_list('id', flat = True).order_by('-id')
+
+    class Meta:
+        model = get_user_model()
+        fields = (
+            'id',
+            'username',
+            'email',
+            'posts',
+        )
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -58,4 +76,5 @@ class ReplySerializer(serializers.ModelSerializer):
             'author': {'write_only': True},
             'anonymous': {'write_only': True},
         }
+
 
