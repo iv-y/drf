@@ -1,7 +1,9 @@
 from django.db import models
 from django.conf import settings
 
+
 # Create your models here.
+
 
 class AbstractAuthoredThing:
     """
@@ -18,6 +20,7 @@ class AbstractAuthoredThing:
         else:
             return "(Unknown)"
 
+
 class Post(models.Model, AbstractAuthoredThing):
     title = models.CharField(max_length=255, null=False, blank=False)
     content = models.TextField()
@@ -27,6 +30,7 @@ class Post(models.Model, AbstractAuthoredThing):
 
     def __str__(self):
         return f'#{self.id} "{self.title}" by {self.author_str}'
+
 
 class Reply(models.Model, AbstractAuthoredThing):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, null=False, blank=False)
