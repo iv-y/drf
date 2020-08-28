@@ -1,13 +1,9 @@
 from rest_framework import serializers
-from .models import Post, Reply
+from board.models import Post, Reply
 
 
 class PostSerializer(serializers.ModelSerializer):
-    author_str = serializers.SerializerMethodField()
     liked_user_count = serializers.SerializerMethodField()
-
-    def get_author_str(self, obj) -> str:
-        return obj.author.author_str
 
     def get_liked_user_count(self, obj) -> int:
         return obj.liked_users.count()
@@ -18,17 +14,24 @@ class PostSerializer(serializers.ModelSerializer):
             'id',
             'title',
             'content',
+            'author',
+            'anonymous',
             'author_str',
             'liked_user_count',
         )
+        read_only_fields = (
+            'id',
+            'author_str',
+            'liked_user_count',
+        )
+        extra_kwargs = {
+            'author': {'write_only': True},
+            'anonymous': {'write_only': True},
+        }
 
 
 class ReplySerializer(serializers.ModelSerializer):
-    author_str = serializers.SerializerMethodField()
     liked_user_count = serializers.SerializerMethodField()
-
-    def get_author_str(self, obj) -> str:
-        return obj.author.author_str
 
     def get_liked_user_count(self, obj) -> int:
         return obj.liked_users.count()
@@ -40,7 +43,18 @@ class ReplySerializer(serializers.ModelSerializer):
             'post',
             'reply_order',
             'content',
+            'author',
+            'anonymous',
             'author_str',
             'liked_user_count',
         )
+        read_only_fields = (
+            'id',
+            'author_str',
+            'liked_user_count',
+        )
+        extra_kwargs = {
+            'author': {'write_only': True},
+            'anonymous': {'write_only': True},
+        }
 
