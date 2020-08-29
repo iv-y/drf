@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'rest_auth.registration',
 
     'allauth',
+    'allauth.account',
 
     'rest_framework',
     'rest_framework.authtoken',
@@ -198,3 +199,6 @@ JWT_AUTH = {
 }
 
 REST_USE_JWT = True
+
+# https://stackoverflow.com/a/50011434
+ACCOUNT_EMAIL_VERIFICATION = 'none'

@@ -61,12 +61,12 @@ export default new Vuex.Store({
     signup(dispatch, loginObj) {
       // login --> return the token
       axios
-        .post("http://ssal.sparcs.org:57570/api/rest-auth/registration", loginObj)
-        .then( res => {
+        .post("http://ssal.sparcs.org:57570/api/rest-auth/registration/", loginObj)
+        .then( () => {
           alert("Sign up complete.");
           router.push({name: "Login"});
           // DEBUG!!!
-          console.log(res);
+          // console.log(res);
         })
         .catch( () => {
           alert("Check your e-mail and password.");
