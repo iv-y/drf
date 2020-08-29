@@ -21,7 +21,7 @@
       <div class="login-btn-txt">
         <a>Find ID/PW |</a>
         <a class="bold">
-          <router-link to="{name: 'signup'}"> &nbsp;&nbsp;Sign up</router-link>
+          <router-link to="/signup"> &nbsp;&nbsp;Sign up</router-link>
         </a>
       </div>
 

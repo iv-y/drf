@@ -37,7 +37,7 @@ export default new Vuex.Store({
       // login --> return the token
       // loginObj : get {email, password}
       axios
-        .post("http://localhost:8000/api/rest-auth/login/", loginObj)
+        .post("http://127.0.0.1:8000/api/rest-auth/login/", loginObj)
         .then(res => {
           // a sucessful access gives id and token
           let token = res.data.token;
@@ -61,12 +61,12 @@ export default new Vuex.Store({
     signup(dispatch, loginObj) {
       // login --> return the token
       axios
-        .post("http://localhost:8000/api/rest-auth/registration", loginObj)
-        .then(res => {
+        .post("http://127.0.0.1:8000/api/rest-auth/registration", loginObj)
+        .then( res => {
           alert("Sign up complete.");
           router.push({name: "Login"});
           // DEBUG!!!
-          // console.log(res);
+          console.log(res);
         })
         .catch( () => {
           alert("Check your e-mail and password.");
@@ -83,7 +83,7 @@ export default new Vuex.Store({
       // token --> get member data
       // refresh(F5) --> get member data with only the token
       axios
-        .get("http://localhost:8000/api/user", config)
+        .get("http://127.0.0.1:8000/api/user", config)
         .then(response => {
           let userInfo = {
             pk: response.data.data.pk,
