@@ -77,18 +77,19 @@ export default new Vuex.Store({
       let token = localStorage.getItem("access_token");
       let config = {
         headers: {
-          "access-token": token
+          // https://stackoverflow.com/a/33737293
+          "Authorization": "JWT ".concat(token)
         }
       };
       // token --> get member data
       // refresh(F5) --> get member data with only the token
       axios
-        .get("http://ssal.sparcs.org:57570/api/user", config)
+        .get("http://ssal.sparcs.org:57570/api/userself/", config)
         .then(response => {
           let userInfo = {
-            pk: response.data.data.pk,
-            username: response.data.data.username,
-            email: response.data.data.email
+            pk: response.data.id,
+            username: response.data.username,
+            email: response.data.email,
           };
           commit("loginSuccess", userInfo);
         })
