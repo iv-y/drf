@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 
+import datetime
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 
@@ -45,6 +47,7 @@ INSTALLED_APPS = [
     'rest_auth.registration',
 
     'allauth',
+    'allauth.account',
 
     'rest_framework',
     'rest_framework.authtoken',
@@ -143,10 +146,13 @@ SITE_ID = 1
 # Cors header settings 
 # Original source from https://medium.com/@equus3144/drf-django-rest-framework-and-vue-js-c3e318e4396a
 
-CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_ALLOW_CREDENTIALS = True
 
 CORS_ORIGIN_WHITELIST = [
     'http://127.0.0.1:80',
+    'http://127.0.0.1:8000',
 ]
 
 CORS_ALLOW_METHODS = (
@@ -172,3 +178,27 @@ CORS_ALLOW_HEADERS = (
     'x-csrftoken',
     'x-requested-with',
 )
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
+
+JWT_AUTH = {
+    'JWT_VERIFY': True,
+    'JWT_VERIFY_EXPIRATION': True,
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(hours=1),
+    'JWT_ALLOW_REFRESH': True,
+    'JWT_AUTH_HEADER_PREFIX': 'JWT',
+}
+
+REST_USE_JWT = True
+
+# https://stackoverflow.com/a/50011434
+ACCOUNT_EMAIL_VERIFICATION = 'none'
