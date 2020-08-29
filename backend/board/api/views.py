@@ -51,7 +51,7 @@ class UserSelf(APIView):
     ]
 
     def get(self, request):
-        serializer = UserDetail(request.user)
+        serializer = UserSerializer(request.user)
         return Response(serializer.data)
 
 
