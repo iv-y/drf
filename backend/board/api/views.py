@@ -44,6 +44,17 @@ class UserDetail(generics.RetrieveAPIView):
     serializer_class = UserSerializer
 
 
+class UserSelf(APIView):
+
+    permission_classes = [
+        permissions.IsAuthenticated,
+    ]
+
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
+
+
 class PostList(APIView):
 
     permission_classes = [
