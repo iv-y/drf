@@ -11,7 +11,9 @@ export default new Vuex.Store({
   state: {
     userInfo: null,
     isLogin: false,
-    isLoginError: false
+    isLoginError: false,
+    boardPosts: null,
+    boardPost: null
   },
 
   mutations: {
@@ -29,10 +31,53 @@ export default new Vuex.Store({
       state.isLogin = false;
       state.isLoginError = false;
       state.userInfo = null;
+    },
+    boardList(state, boardList) {
+      state.boardPosts = boardList;
+    },
+    boardDetail(state, boardDetail) {
+      state.boardPost = boardDetail;
     }
   },
 
   actions: {
+    boardRefresh({commit}) {
+      axios
+        .get("http://ssal.sparcs.org:57570/api/posts/")
+        .then(res => {
+          commit("boardList", res.data);
+        })
+        .catch( () => {
+          alert("An error occurred while refreshing the board.");
+        });
+    },
+
+    boardGetDetail({commit}, pk) {
+      axios
+        .get("http://ssal.sparcs.org:57570/api/posts/".concat(pk.toString()))
+        .then(res => {
+          commit("boardDetail", res.data);
+        })
+        .catch( () => {
+          alert("An error occured while getting the post.");
+        });
+    },
+
+    boardWrite(dispatch, postObj) {
+      axios
+        .post("http://ssal.sparcs.org:57570/api/posts/", postObj)
+        .then(res => {
+          // DEBUG!!!
+          alert(res.data);
+
+          this.dispatch("boardRefresh");
+          router.push({name: "Home"});
+        })
+        .catch( () => {
+          alert("Failed to write the post.");
+        });
+    },
+
     login(dispatch, loginObj) {
       // login --> return the token
       // loginObj : get {email, password}

@@ -62,7 +62,7 @@ class PostList(APIView):
     ]
 
     def get(self, request, format = None):
-        posts = Post.objects.all()
+        posts = Post.objects.order_by('-id').all()
         serializer = PostSerializer(posts, many = True)
         return Response(serializer.data)
 
