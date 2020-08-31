@@ -1,16 +1,14 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <span v-if="isLogin">
-        <span>{{userInfo.username}}</span> |
-        <router-link to="/logout">Logout</router-link>
-      </span>
-      <span v-else>
-        <router-link to="/login">Login</router-link> |
-        <router-link to="/signup">Signup</router-link>
-      </span>
-    </div>
+    <sui-menu id="nav">
+      <sui-menu-item 
+        v-for="menu in processMenus( menus, isLogin, userInfo )" 
+        v-bind:key="menu.id"
+      >
+        <router-link v-if="menu.link" v-bind:to="menu.link">{{menu.text}}</router-link>
+        <span v-else>{{menu.text}}</span>
+      </sui-menu-item>
+    </sui-menu>
     <router-view />
   </div>
 </template>
@@ -18,9 +16,73 @@
 <script>
 import { mapState } from 'vuex'
 export default {
-  
+  data() {
+    return {
+      menus: [
+        {
+          "id": 0,
+          "link": "/",
+          "text": "Home",
+          "activity": "always"
+        },
+        {
+          "id": 1,
+          "link": null,
+          "text": "",
+          "activity": "auth"
+        },
+        {
+          "id": 2,
+          "link": "/logout",
+          "text": "Logout",
+          "activity": "auth"
+        },
+        {
+          "id": 3,
+          "link": "/login",
+          "text": "Login",
+          "activity": "anon"
+        },
+        {
+          "id": 4,
+          "link": "/signup",
+          "text": "Signup",
+          "activity": "anon"
+        }
+      ]
+    }
+  },
+
   computed: {
-    ...mapState(["isLogin", "userInfo"])
+    ...mapState(["isLogin", "userInfo"]),
+  },
+
+  methods: {
+    processMenus ( menus, isLogin, userInfo ) {
+      return (
+        menus
+        .filter( function (menu) {
+          switch (menu.activity) {
+            case "auth":
+              return isLogin;
+            case "anon":
+              return !isLogin;
+            case "always":
+              return true;
+            default:
+              return false;
+          }
+        })
+        .map( function (menu) {
+          if (menu.id == 1) {
+            menu.text = userInfo.username;
+            return menu;
+          } else {
+            return menu;
+          }
+        })
+      );
+    }
   }
 
 }
@@ -35,9 +97,6 @@ export default {
   color: #2c3e50;
 }
 
-#nav {
-  padding: 30px;
-}
 
 #nav a {
   font-weight: bold;

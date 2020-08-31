@@ -54,7 +54,7 @@ export default new Vuex.Store({
 
     boardGetDetail({commit}, pk) {
       axios
-        .get("http://ssal.sparcs.org:57570/api/posts/".concat(pk.toString()))
+        .get("http://ssal.sparcs.org:57570/api/posts/".concat(pk.toString(), "/"))
         .then(res => {
           commit("boardDetail", res.data);
         })

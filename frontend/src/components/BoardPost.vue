@@ -1,16 +1,6 @@
 <template>
   <div id="boardpost">
-    <h3>#{{boardPost.id}} "{{boardPost.title}}"
-      <span id="boardpost-refresh-btn">
-        <input 
-          type="submit"
-          class="button"
-          name="submit"
-          @click="boardDetail()"
-          value="Refresh this Post"
-        />
-      </span>
-    </h3>
+    <h3>#{{boardPost.id}} "{{boardPost.title}}"</h3>
     <h4>By {{boardPost.author_str}}</h4>
     <div>
       {{ boardPost.content }}

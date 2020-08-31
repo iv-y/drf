@@ -1,6 +1,5 @@
 <template>
   <div class="formContainer">
-    <a class="bold">&nbsp;&nbsp;Signup</a>
     <form class="login-box">
       <p>ID</p>
       <input type="text" v-model="username" name="username" label="Input ID" />
