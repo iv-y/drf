@@ -61,7 +61,7 @@ class PostList(generics.ListCreateAPIView):
         permissions.IsAuthenticatedOrReadOnly,
     ]
 
-    queryset = Post.objects.__module__order_by('-id').all()
+    queryset = Post.objects.order_by('-id').all()
     serializer_class = PostSerializer
     filterset_fields = (
         'title',
