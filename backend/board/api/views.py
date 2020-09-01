@@ -63,6 +63,10 @@ class PostList(generics.ListCreateAPIView):
 
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+    filterset_fields = (
+        'title',
+        'content',
+    )
 
     def perform_create(self, serializer):
         serializer.save(author = self.request.user)
@@ -87,6 +91,10 @@ class ReplyList(generics.ListCreateAPIView):
 
     queryset = Reply.objects.all()
     serializer_class = ReplySerializer
+    filterset_fields = (
+        'post',
+        'content',
+    )
 
     def perform_create(self, serializer):
         post = Post.objects.get(id = self.request.data["post"])
