@@ -1,7 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.http import Http404
-from rest_framework import status, generics, permissions
+from rest_framework import generics, permissions
 
 from rest_framework.decorators import api_view
 from rest_framework.reverse import reverse
@@ -20,6 +19,7 @@ def api_root(request, format = None):
     return Response({
         'users': reverse('user-list', request = request, format = format),
         'posts': reverse('post-list', request = request, format = format),
+        'replies': reverse('reply-list', request = request, format = format),
     })
 
 
@@ -55,97 +55,52 @@ class UserSelf(APIView):
         return Response(serializer.data)
 
 
-class PostList(APIView):
+class PostList(generics.ListCreateAPIView):
 
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly,
     ]
 
-    def get(self, request, format = None):
-        posts = Post.objects.order_by('-id').all()
-        serializer = PostSerializer(posts, many = True)
-        return Response(serializer.data)
+    queryset = Post.objects.__module__order_by('-id').all()
+    serializer_class = PostSerializer
+    filterset_fields = (
+        'title',
+        'content',
+    )
 
-    def post(self, request, format = None):
-        post_specific_data = {
-            "author": request.user.id,
-        }
-
-        serializer = PostSerializer(data = {**request.data, **post_specific_data})
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status = status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+    def perform_create(self, serializer):
+        serializer.save(author = self.request.user)
 
 
-class PostDetail(APIView):
+class PostDetail(generics.RetrieveUpdateDestroyAPIView):
     
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly,
         IsAuthorOrReadOnly,
     ]
 
-    def get_object(self, pk):
-        try:
-            return Post.objects.get(pk = pk)
-        except:
-            raise Http404('No such post exist.')
-
-    def get(self, request, pk, format = None):
-        post = self.get_object(pk)
-        serializer = PostSerializer(post)
-        return Response(serializer.data)
-
-    def put(self, request, pk, format = None):
-        post = self.get_object(pk)
-        serializer = PostSerializer(post, data = request.data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        else:
-            return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk, format = None):
-        post = self.get_object(pk)
-        post.delete()
-
-        return Response(status = status.HTTP_204_NO_CONTENT)
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
 
 
-class ReplyList(APIView):
+class ReplyList(generics.ListCreateAPIView):
 
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly,
     ]
 
-    def get_post(self, pk):
-        try:
-            return Post.objects.get(pk = pk)
-        except:
-            raise Http404('No such post exist.')
+    queryset = Reply.objects.all()
+    serializer_class = ReplySerializer
+    filterset_fields = (
+        'post',
+        'content',
+    )
 
-    def get(self, request, pk, format = None):
-        post = self.get_post(pk)
-        replies = post.reply_set.order_by('reply_order').all()
-        serializer = ReplySerializer(replies, many = True)
+    def perform_create(self, serializer):
+        post = Post.objects.get(id = self.request.data["post"])
+        reply_order = post.reply_set.aggregate(Max('reply_order'))['reply_order__max'] + 1
 
-        return Response(serializer.data)
+        serializer.save(author = self.request.user, reply_order = reply_order)
 
-    def post(self, request, pk, format = None):
-        post = self.get_post(pk)
-        reply_specific_data = {
-            "post": pk,
-            "reply_order": post.reply_set.aggregate(Max('reply_order'))['reply_order__max'] + 1,
-            "author": request.user.id,
-        }
-        serializer = ReplySerializer(data = {**request.data, **reply_specific_data})
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status = status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
 
 # TODO Add a 'ReplyDetail' view
