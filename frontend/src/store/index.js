@@ -13,7 +13,8 @@ export default new Vuex.Store({
     isLogin: false,
     isLoginError: false,
     boardPosts: null,
-    boardPost: null
+    boardPost: null,
+    boardReplies: null,
   },
 
   mutations: {
@@ -32,11 +33,14 @@ export default new Vuex.Store({
       state.isLoginError = false;
       state.userInfo = null;
     },
-    boardList(state, boardList) {
-      state.boardPosts = boardList;
+    boardList(state, payload) {
+      state.boardPosts = payload;
     },
-    boardDetail(state, boardDetail) {
-      state.boardPost = boardDetail;
+    boardDetail(state, payload) {
+      state.boardPost = payload;
+    },
+    boardReplies(state, payload) {
+      state.boardReplies = payload;
     }
   },
 
@@ -57,6 +61,15 @@ export default new Vuex.Store({
         .get("http://ssal.sparcs.org:57570/api/posts/".concat(pk.toString(), "/"))
         .then(res => {
           commit("boardDetail", res.data);
+        })
+        .catch( () => {
+          alert("An error occured while getting the post.");
+        });
+
+      axios
+        .get("http://ssal.sparcs.org:57570/api/replies/?post=".concat(pk.toString()))
+        .then(res => {
+          commit("boardReplies", res.data);
         })
         .catch( () => {
           alert("An error occured while getting the post.");

@@ -5,6 +5,15 @@
     <div>
       {{ boardPost.content }}
     </div>
+    <h4>Replies</h4>
+    <sui-container>
+      <sui-container v-for="reply in boardReplies" v-bind:key="reply.id">
+        #{{boardPost.id}}>{{reply.reply_order}}
+        By {{reply.author_str}}
+        "{{reply.content}}"
+        ++{{reply.liked_user_count}}
+      </sui-container>
+    </sui-container>
   </div>
 </template>
 
@@ -17,7 +26,7 @@ export default {
   ],
 
   computed: {
-    ...mapState(["boardPost"])
+    ...mapState(["boardPost", "boardReplies"])
   },
 
   methods: {
